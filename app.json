@@ -1,0 +1,39 @@
+{
+  "id": "096d0143-8b92-48a5-adc1-8f35b9964641",
+  "name": "PO_SO_AdditionalFieldsDev",
+  "publisher": "Stratus Group",
+  "version": "1.0.1.9",
+  "runtime": "16.0",
+  "target": "Cloud",
+  "application": "27.0.0.0",
+  "platform": "27.0.0.0",
+  "resourceExposurePolicy": {
+    "allowDebugging": true,
+    "allowDownloadingSource": true,
+    "includeSourceInSymbolFile": true,
+    "applyToDevExtension": false
+  },
+  "features": [
+    "NOIMPLICITWITH"
+  ],
+  "dependencies": [
+    {
+      "id": "80b0562d-5bb2-4e67-a579-53564677c22a",
+      "name": "Wiise Australia",
+      "version": "27.0.0.0",
+      "publisher": "Wiise"
+    },
+    {
+      "id": "d6a66788-a074-4d76-856a-30e69eeb103c",
+      "name": "Wiise",
+      "version": "27.0.0.0",
+      "publisher": "Wiise"
+    }
+  ],
+  "idRanges": [
+    {
+      "from": 50100,
+      "to": 50149
+    }
+  ]
+}
