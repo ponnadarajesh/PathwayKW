@@ -3,13 +3,24 @@ pageextension 50100 "ExtraFields_on_PO_SubForm" extends "Purchase Order Subform"
     layout
     {
         // Adds the field after the Unit of Measure Code on the page
-        addafter("Unit of Measure Code")
+        addafter(description)
         {
-            field(UOM; Rec.PI_UOM)
+            field("Order Quantity"; Rec."Order Quantity")
             {
                 ApplicationArea = All;
-                ToolTip = 'Specifies the Unit of Measure for the selected item.';
+                ToolTip = 'Order quantity expressed in the item base unit of measure (for example, KG).';
             }
+            field("Order UOM"; Rec."Order UOM")
+            {
+                ApplicationArea = All;
+                Editable = false;
+                ToolTip = 'Base unit of measure used for the Order Quantity.';
+            }
+            // field(UOM; Rec.PI_UOM)
+            // {
+            //     ApplicationArea = All;
+            //     ToolTip = 'Specifies the Unit of Measure for the selected item.';
+            // }
             field("Pack Size"; Rec.PackSize_Value)
             {
                 ApplicationArea = All;

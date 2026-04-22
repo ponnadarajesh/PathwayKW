@@ -3,18 +3,25 @@ pageextension 50111 "Purch Lines" extends "Purchase Lines"
     layout
     {
         // Adds the field after the Unit of Measure Code on the page
-        addafter("Unit of Measure Code")
+        addafter(Description)
         {
-            // field("Pack Size"; Rec.PackSize_Value)
-            // {
-            //     ApplicationArea = All;
-            //     ToolTip = 'Specifies the quantity per unit of measure for the selected item.';
-            // }
-            // field("Pack Size Code"; Rec."PackSize_Code")
-            // {
-            //     ApplicationArea = All;
-            //     ToolTip = 'Specifies the code for the pack size of the selected item.';
-            // }
+            field("Order Quantity"; Rec."Order Quantity")
+            {
+                ApplicationArea = All;
+                ToolTip = 'Order quantity expressed in the item base unit of measure (for example, KG).';
+            }
+            field("Order UOM"; Rec."Order UOM")
+            {
+                ApplicationArea = All;
+                Editable = false;
+                ToolTip = 'Base unit of measure used for the Order Quantity.';
+            }
+            field("Pack Size"; Rec.PackSize_Value)
+            {
+                ApplicationArea = All;
+                ToolTip = 'Quantity per selected unit of measure.';
+                Editable = false;
+            }
         }
         modify("Description 2")
         {

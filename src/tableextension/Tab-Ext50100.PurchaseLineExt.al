@@ -23,6 +23,18 @@ tableextension 50100 "Purchase Line Ext" extends "Purchase Line"
             DataClassification = CustomerContent;
             TableRelation = "Item Unit of Measure".Code where("Item No." = field("No."));
         }
+        field(50103; "Order Quantity"; Decimal)
+        {
+            Caption = 'Order Quantity (Base UOM)';
+            DataClassification = CustomerContent;
+            DecimalPlaces = 0 : 5;
+        }
+        field(50104; "Order UOM"; Code[10])
+        {
+            Caption = 'Order UOM';
+            DataClassification = CustomerContent;
+            Editable = false;
+        }
         // Modify the existing Unit of Measure Code field trigger
         modify("No.")
         {
@@ -47,6 +59,15 @@ tableextension 50100 "Purchase Line Ext" extends "Purchase Line"
             trigger OnAfterValidate()
             begin
                 FetchPackConfigFromItemUOM();
+                RecalcQuantityFromOrderQty();
+                UpdateDescription2();
+            end;
+        }
+        modify("Order Quantity")
+        {
+            trigger OnAfterValidate()
+            begin
+                RecalcQuantityFromOrderQty();
                 UpdateDescription2();
             end;
         }
@@ -107,7 +128,29 @@ tableextension 50100 "Purchase Line Ext" extends "Purchase Line"
                 end
                 else
                     Rec.PackSize_Value := 0;
+                // Set Order UOM to the Item base UOM so Order Quantity is always expressed in base UOM (e.g., KG)
+                Rec."Order UOM" := Item."Base Unit of Measure";
+                // If line quantity already has a value, derive Order Quantity in base UOM
+                if Rec.Quantity <> 0 then
+                    Rec."Order Quantity" := Rec.Quantity * Rec.PackSize_Value;
             end;
         end;
+    end;
+
+    procedure RecalcQuantityFromOrderQty()
+    var
+        TempQty: Decimal;
+    begin
+        if Rec."Order Quantity" = 0 then
+            exit;
+
+        if Rec.PackSize_Value = 0 then
+            FetchPackConfigFromItemUOM();
+
+        if Rec.PackSize_Value = 0 then
+            exit;
+
+        TempQty := Rec."Order Quantity" / Rec.PackSize_Value;
+        Rec.Quantity := Round(TempQty, 5);
     end;
 }
