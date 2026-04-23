@@ -52,6 +52,7 @@ tableextension 50100 "Purchase Line Ext" extends "Purchase Line"
                 Rec."PI_UOM" := Rec."Unit of Measure Code";
                 // FetchPackConfigFromItemUOM();
                 // UpdateDescription2();
+                RecalcQuantityFromOrderQty();
             end;
         }
         modify(PI_UOM)
@@ -130,9 +131,6 @@ tableextension 50100 "Purchase Line Ext" extends "Purchase Line"
                     Rec.PackSize_Value := 0;
                 // Set Order UOM to the Item base UOM so Order Quantity is always expressed in base UOM (e.g., KG)
                 Rec."Order UOM" := Item."Base Unit of Measure";
-                // If line quantity already has a value, derive Order Quantity in base UOM
-                if Rec.Quantity <> 0 then
-                    Rec."Order Quantity" := Rec.Quantity * Rec.PackSize_Value;
             end;
         end;
     end;
@@ -141,6 +139,7 @@ tableextension 50100 "Purchase Line Ext" extends "Purchase Line"
     var
         TempQty: Decimal;
     begin
+        TempQty := 0;
         if Rec."Order Quantity" = 0 then
             exit;
 
@@ -150,7 +149,8 @@ tableextension 50100 "Purchase Line Ext" extends "Purchase Line"
         if Rec.PackSize_Value = 0 then
             exit;
 
-        TempQty := Rec."Order Quantity" / Rec.PackSize_Value;
-        Rec.Quantity := Round(TempQty, 5);
+        TempQty := Round(Rec."Order Quantity" / Rec."Qty. per Unit of Measure", 0.00001);
+        Rec.validate(Quantity, TempQty);
+        //Rec.Modify()
     end;
 }
