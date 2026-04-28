@@ -3,8 +3,25 @@ pageextension 50102 "Posted Pur. Inv. Subform Ext" extends "Posted Purch. Invoic
     layout
     {
         // Adds the field after the Unit of Measure Code on the page
-        addafter("Unit of Measure Code")
+        addafter(description)
         {
+            field("Order Quantity"; Rec."Order Quantity")
+            {
+                ApplicationArea = All;
+                ToolTip = 'Order quantity expressed in the item base unit of measure (for example, KG).';
+            }
+            field("Order UOM"; Rec."Order UOM")
+            {
+                ApplicationArea = All;
+                Editable = false;
+                ToolTip = 'Base unit of measure used for the Order Quantity.';
+            }
+            field("Order Unit Cost"; Rec."Order Unit Cost")
+            {
+                ApplicationArea = All;
+                Editable = false;
+                ToolTip = 'Calculated cost per base unit of measure for the order quantity.';
+            }
             field("UOM"; Rec.PI_UOM)
             {
                 ApplicationArea = All;

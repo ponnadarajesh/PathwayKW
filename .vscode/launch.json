@@ -13,7 +13,8 @@
             "breakOnError": "All",
             "launchBrowser": true,
             "enableLongRunningSqlStatements": true,
-            "enableSqlInformationDebugger": true
+            "enableSqlInformationDebugger": true,
+            "schemaUpdateMode": "ForceSync"
         },
         {
             "name": "AL: Generated Attach request",
@@ -21,7 +22,7 @@
             "type": "al",
             "environmentType": "Sandbox",
             "environmentName": "PI_DEV_16032026",
-            "sessionId": 127811,
+            "sessionId": 59761,
             "breakOnNext": "WebClient",
             "breakOnError": "ExcludeTry",
             "tenant": "7b73629d-ec05-4c1d-b93c-79f3ff7deb73"

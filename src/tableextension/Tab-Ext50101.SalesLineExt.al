@@ -23,6 +23,25 @@ tableextension 50101 "Sales Line Ext" extends "Sales Line"
             DataClassification = CustomerContent;
             TableRelation = "Item Unit of Measure".Code where("Item No." = field("No."));
         }
+        field(50103; "Order Quantity"; Decimal)
+        {
+            Caption = 'Order Quantity (Base UOM)';
+            DataClassification = CustomerContent;
+            DecimalPlaces = 0 : 5;
+        }
+        field(50104; "Order UOM"; Code[10])
+        {
+            Caption = 'Order UOM';
+            DataClassification = CustomerContent;
+            Editable = false;
+        }
+        field(50105; "Order Unit Price"; Decimal)
+        {
+            Caption = 'Order Unit Price';
+            DataClassification = CustomerContent;
+            DecimalPlaces = 2 : 5;
+            Editable = false;
+        }
         // // Modify the existing Unit of Measure Code field trigger
         // modify("Unit of Measure Code")
         // {
@@ -60,6 +79,7 @@ tableextension 50101 "Sales Line Ext" extends "Sales Line"
                 // This copies the value whenever the user selects a UOM
                 Rec."PI_UOM" := Rec."Unit of Measure Code";
                 FetchPackConfigFromItemUOM();
+                RecalcQuantityFromOrderQty();
                 UpdateDescription2();
             end;
         }
@@ -68,7 +88,24 @@ tableextension 50101 "Sales Line Ext" extends "Sales Line"
             trigger OnAfterValidate()
             begin
                 FetchPackConfigFromItemUOM();
+                RecalcQuantityFromOrderQty();
                 UpdateDescription2();
+            end;
+        }
+        modify("Order Quantity")
+        {
+            trigger OnAfterValidate()
+            begin
+                RecalcQuantityFromOrderQty();
+                UpdateDescription2();
+                CalculateOrderPrice();
+            end;
+        }
+        modify("Unit Price")
+        {
+            trigger OnAfterValidate()
+            begin
+                CalculateOrderPrice();
             end;
         }
         modify(Quantity)
@@ -126,7 +163,36 @@ tableextension 50101 "Sales Line Ext" extends "Sales Line"
                 end
                 else
                     Rec.PackSize_Value := 0;
+                // Set Order UOM to the Item base UOM so Order Quantity is always expressed in base UOM (e.g., KG)
+                Rec."Order UOM" := Item."Base Unit of Measure";
             end;
         end;
+    end;
+
+    procedure RecalcQuantityFromOrderQty()
+    var
+        TempQty: Decimal;
+    begin
+        TempQty := 0;
+        if Rec."Order Quantity" = 0 then
+            exit;
+
+        if Rec.PackSize_Value = 0 then
+            FetchPackConfigFromItemUOM();
+
+        if Rec.PackSize_Value = 0 then
+            exit;
+
+        TempQty := Round(Rec."Order Quantity" / Rec."Qty. per Unit of Measure", 0.00001);
+        Rec.validate(Quantity, TempQty);
+        Rec.validate("Unit Price");
+    end;
+
+    procedure CalculateOrderPrice()
+    begin
+        if Rec."Qty. per Unit of Measure" <> 0 then
+            Rec."Order Unit Price" := Round((Rec."Unit Price" / Rec."Qty. per Unit of Measure"), 0.01)
+        else
+            Rec."Order Unit Price" := 0;
     end;
 }

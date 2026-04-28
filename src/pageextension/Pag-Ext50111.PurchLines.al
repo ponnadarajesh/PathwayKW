@@ -16,6 +16,12 @@ pageextension 50111 "Purch Lines" extends "Purchase Lines"
                 Editable = false;
                 ToolTip = 'Base unit of measure used for the Order Quantity.';
             }
+            field("Order Price"; Rec."Order Unit Cost")
+            {
+                ApplicationArea = All;
+                Editable = false;
+                ToolTip = 'Calculated price for the order quantity.';
+            }
             field("Pack Size"; Rec.PackSize_Value)
             {
                 ApplicationArea = All;

@@ -54,74 +54,81 @@
 // //      end;
 // // }
 
-// codeunit 50121 "Pack Config - ILE Transfer"
-// {
-//     // [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Jnl.-Post Line", 'OnAfterInitItemLedgEntry', '', false, false)]
-//     // local procedure OnAfterInitItemLedgEntry(
-//     //     var NewItemLedgEntry: Record "Item Ledger Entry";
-//     //     ItemJournalLine: Record "Item Journal Line")
-//     // begin
-//     //     NewItemLedgEntry."Description 2" := ItemJournalLine."Description 2";
-//     //     NewItemLedgEntry."PackSize_Value" := ItemJournalLine."PackSize_Value";
-//     //     NewItemLedgEntry."PackSize_Code" := ItemJournalLine."PackSize_Code";
-//     // end;
-//     // [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", 'OnAfterCopyPurchLineToItemJnlLine', '', false, false)]
-//     local procedure CopyPackConfigToJnlLine(PurchLine: Record "Purchase Line"; var ItemJnlLine: Record "Item Journal Line")
-//     begin
-//         ItemJnlLine."Description 2" := PurchLine."Description 2";
-//         ItemJnlLine."PackSize_Value" := PurchLine."PackSize_Value";
-//         ItemJnlLine."PackSize_Code" := PurchLine."PackSize_Code";
-//     end;
+codeunit 50121 "Pack Config - ILE Transfer"
+{
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Jnl.-Post Line", 'OnAfterInitItemLedgEntry', '', false, false)]
+    local procedure LocalInitItemLedgEntry(
+        var NewItemLedgEntry: Record "Item Ledger Entry";
+        ItemJournalLine: Record "Item Journal Line")
+    begin
+        NewItemLedgEntry."Description 2" := ItemJournalLine."Description 2";
+        NewItemLedgEntry."PackSize_Value" := ItemJournalLine."PackSize_Value";
+        NewItemLedgEntry."PackSize_Code" := ItemJournalLine."PackSize_Code";
+    end;
 
-//     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Jnl.-Post Line",
-//     'OnSetupTempSplitItemJnlLineOnBeforeCalcPostItemJnlLine', '', false, false)]
-//     local procedure OnSetupTempSplitItemJnlLine(var TempSplitItemJnlLine: Record "Item Journal Line";
-//     TempTrackingSpecification: Record "Tracking Specification")
-//     begin
-//         TempSplitItemJnlLine."Description 2" := TempTrackingSpecification."Description 2";
-//         TempSplitItemJnlLine."PackSize_Value" := TempTrackingSpecification."PackSize_Value";
-//         TempSplitItemJnlLine."PackSize_Code" := TempTrackingSpecification."PackSize_Code";
-//     end;
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Purch.-Post", OnBeforeItemJnlPostLine, '', false, false)]
+    local procedure CopyPackConfigToJnlLine(PurchaseLine: Record "Purchase Line"; var ItemJournalLine: Record "Item Journal Line")
+    begin
+        ItemJournalLine."Description 2" := PurchaseLine."Description 2";
+        ItemJournalLine."PackSize_Value" := PurchaseLine."PackSize_Value";
+        ItemJournalLine."PackSize_Code" := PurchaseLine."PackSize_Code";
+    end;
 
-//     [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Jnl.-Post Line", 'OnAfterInitItemLedgEntry', '', false, false)]
-//     local procedure OnAfterInitItemLedgEntry(var NewItemLedgEntry: Record "Item Ledger Entry"; ItemJournalLine: Record "Item Journal Line")
-//     begin
-//         NewItemLedgEntry."Description 2" := ItemJournalLine."Description 2";
-//         NewItemLedgEntry."PackSize_Value" := ItemJournalLine."PackSize_Value";
-//         NewItemLedgEntry."PackSize_Code" := ItemJournalLine."PackSize_Code";
-//     end;
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Jnl.-Post Line",
+    'OnSetupTempSplitItemJnlLineOnBeforeCalcPostItemJnlLine', '', false, false)]
+    local procedure OnSetupTempSplitItemJnlLine(var TempSplitItemJnlLine: Record "Item Journal Line";
+    TempTrackingSpecification: Record "Tracking Specification")
+    begin
+        TempSplitItemJnlLine."Description 2" := TempTrackingSpecification."Description 2";
+        TempSplitItemJnlLine."PackSize_Value" := TempTrackingSpecification."PackSize_Value";
+        TempSplitItemJnlLine."PackSize_Code" := TempTrackingSpecification."PackSize_Code";
+    end;
 
-//     [EventSubscriber(ObjectType::Page, Page::"Item Avail. by Lot No. Lines",
-//     'OnAfterCalcAvailQuantities', '', false, false)]
-//     local procedure OnAfterCalcAvailQuantities(var AvailabilityInfoBuffer: Record "Availability Info. Buffer" temporary; var Item: Record Item)
-//     var
-//         ILE: Record "Item Ledger Entry";
-//         PackConfig: Code[50];
-//     begin
-//         if AvailabilityInfoBuffer.IsEmpty() then
-//             exit;
+    [EventSubscriber(ObjectType::Codeunit, Codeunit::"Item Jnl.-Post Line", 'OnAfterInitItemLedgEntry', '', false, false)]
+    local procedure OnAfterInitItemLedgEntry(var NewItemLedgEntry: Record "Item Ledger Entry"; ItemJournalLine: Record "Item Journal Line")
+    begin
+        NewItemLedgEntry."Description 2" := ItemJournalLine."Description 2";
+        NewItemLedgEntry."PackSize_Value" := ItemJournalLine."PackSize_Value";
+        NewItemLedgEntry."PackSize_Code" := ItemJournalLine."PackSize_Code";
+    end;
 
-//         if AvailabilityInfoBuffer.FindSet() then
-//             repeat
-//                 PackConfig := '';
+    // [EventSubscriber(ObjectType::Page, Page::"Item Avail. by Lot No. Lines",
+    // 'OnAfterCalcAvailQuantities', '', false, false)]
+    // local procedure OnAfterCalcAvailQuantities(var AvailabilityInfoBuffer: Record "Availability Info. Buffer" temporary; var Item: Record Item)
+    // var
+    //     ILE: Record "Item Ledger Entry";
+    //     PackConfig: Code[50];
+    // begin
+    //     if AvailabilityInfoBuffer.IsEmpty() then
+    //         exit;
 
-//                 // Find a posted ILE for this item+lot (optionally add location filter if you want)
-//                 ILE.Reset();
-//                 ILE.SetCurrentKey("Item No.", "Lot No.");
-//                 ILE.SetRange("Item No.", AvailabilityInfoBuffer."Item No.");
-//                 ILE.SetRange("Lot No.", AvailabilityInfoBuffer."Lot No.");
+    //     if AvailabilityInfoBuffer.FindSet() then
+    //         repeat
+    //             PackConfig := '';
 
-//                 // If you want to respect the page Location Filter, add:
-//                 if AvailabilityInfoBuffer.GetFilter("Location Code Filter") <> '' then
-//                     ILE.SetFilter("Location Code", AvailabilityInfoBuffer.GetFilter("Location Code Filter"));
+    //             // Find a posted ILE for this item+lot (optionally add location filter if you want)
+    //             ILE.Reset();
+    //             ILE.SetCurrentKey("Item No.", "Lot No.");
+    //             ILE.SetRange("Item No.", AvailabilityInfoBuffer."Item No.");
+    //             ILE.SetRange("Lot No.", AvailabilityInfoBuffer."Lot No.");
 
-//                 if ILE.FindFirst() then
-//                     PackConfig := ILE."Description 2"; // Assuming Description 2 holds the Pack Configuration info
+    //             // If you want to respect the page Location Filter, add:
+    //             if AvailabilityInfoBuffer.GetFilter("Location Code Filter") <> '' then
+    //                 ILE.SetFilter("Location Code", AvailabilityInfoBuffer.GetFilter("Location Code Filter"));
 
-//                 AvailabilityInfoBuffer."Description 2" := PackConfig;
-//                 AvailabilityInfoBuffer.PackSize_Code := ILE."PackSize_Code";
-//                 AvailabilityInfoBuffer.PackSize_Value := ILE."PackSize_Value";
-//                 AvailabilityInfoBuffer.Modify();
-//             until AvailabilityInfoBuffer.Next() = 0;
-//     end;
-// }
+    //             if ILE.FindFirst() then
+    //                 PackConfig := ILE."Description 2"; // Assuming Description 2 holds the Pack Configuration info
+
+    //             AvailabilityInfoBuffer."Description 2" := PackConfig;
+    //             AvailabilityInfoBuffer.PackSize_Code := ILE."PackSize_Code";
+    //             AvailabilityInfoBuffer.PackSize_Value := ILE."PackSize_Value";
+    //             AvailabilityInfoBuffer.Modify();
+    //         until AvailabilityInfoBuffer.Next() = 0;
+    // end;
+    [EventSubscriber(ObjectType::Table, Database::"Purchase Line", OnUpdateDirectUnitCostByFieldOnAfterCalcShouldExit, '', false, false)]
+    procedure CalDunitcost(CalledByFieldNo: Integer; CurrFieldNo: Integer; var ShouldExit: Boolean)
+    begin
+        If currFieldNo = 50103 then
+            shouldExit := false;
+    end;
+}

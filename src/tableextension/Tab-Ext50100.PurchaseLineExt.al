@@ -35,6 +35,13 @@ tableextension 50100 "Purchase Line Ext" extends "Purchase Line"
             DataClassification = CustomerContent;
             Editable = false;
         }
+        field(50105; "Order Unit Cost"; Decimal)
+        {
+            Caption = 'Order Unit Cost';
+            DataClassification = CustomerContent;
+            DecimalPlaces = 2 : 5;
+            Editable = false;
+        }
         // Modify the existing Unit of Measure Code field trigger
         modify("No.")
         {
@@ -50,6 +57,7 @@ tableextension 50100 "Purchase Line Ext" extends "Purchase Line"
             begin
                 // This copies the value whenever the user selects a UOM
                 Rec."PI_UOM" := Rec."Unit of Measure Code";
+                //Rec.validate("Direct Unit Cost", 0);
                 // FetchPackConfigFromItemUOM();
                 // UpdateDescription2();
                 RecalcQuantityFromOrderQty();
@@ -70,6 +78,14 @@ tableextension 50100 "Purchase Line Ext" extends "Purchase Line"
             begin
                 RecalcQuantityFromOrderQty();
                 UpdateDescription2();
+                CalculateOrderPrice();
+            end;
+        }
+        modify("Direct Unit Cost")
+        {
+            trigger OnAfterValidate()
+            begin
+                CalculateOrderPrice();
             end;
         }
         modify(Quantity)
@@ -139,7 +155,7 @@ tableextension 50100 "Purchase Line Ext" extends "Purchase Line"
     var
         TempQty: Decimal;
     begin
-        TempQty := 0;
+        //TempQty := 0;
         if Rec."Order Quantity" = 0 then
             exit;
 
@@ -151,6 +167,20 @@ tableextension 50100 "Purchase Line Ext" extends "Purchase Line"
 
         TempQty := Round(Rec."Order Quantity" / Rec."Qty. per Unit of Measure", 0.00001);
         Rec.validate(Quantity, TempQty);
+        //Rec.modify();
+        Rec.UpdateDirectUnitCost(fieldno(Quantity));
+        If Rec."Direct Unit Cost" <> 0 then
+            Rec.validate("Line Amount", Rec.Quantity * Rec."Direct Unit Cost");
+        //rec.validate("Unit of Measure Code");
+        //Rec.validate("Direct Unit Cost");
         //Rec.Modify()
+    end;
+
+    procedure CalculateOrderPrice()
+    begin
+        if Rec."Qty. per Unit of Measure" <> 0 then
+            Rec."Order Unit Cost" := Round((Rec."Direct Unit Cost" / Rec."Qty. per Unit of Measure"), 0.01)
+        else
+            Rec."Order Unit Cost" := 0;
     end;
 }

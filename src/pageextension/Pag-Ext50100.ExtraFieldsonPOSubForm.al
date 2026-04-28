@@ -16,6 +16,18 @@ pageextension 50100 "ExtraFields_on_PO_SubForm" extends "Purchase Order Subform"
                 Editable = false;
                 ToolTip = 'Base unit of measure used for the Order Quantity.';
             }
+            field("Order Unit Cost"; Rec."Order Unit Cost")
+            {
+                ApplicationArea = All;
+                Editable = false;
+                ToolTip = 'Calculated cost per base unit of measure for the order quantity.';
+            }
+            // field("Order Price"; Rec."Order Price")
+            // {
+            //     ApplicationArea = All;
+            //     Editable = false;
+            //     ToolTip = 'Calculated price for the order quantity.';
+            // }
             // field(UOM; Rec.PI_UOM)
             // {
             //     ApplicationArea = All;

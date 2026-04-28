@@ -3,8 +3,25 @@ pageextension 50101 "Sales Order Subform Ext" extends "Sales Order Subform"
     layout
     {
         // Adds the field after the Unit of Measure Code on the page
-        addafter("Unit of Measure Code")
+        addafter(description)
         {
+            field("Order Quantity"; Rec."Order Quantity")
+            {
+                ApplicationArea = All;
+                ToolTip = 'Order quantity expressed in the item base unit of measure (for example, KG).';
+            }
+            field("Order UOM"; Rec."Order UOM")
+            {
+                ApplicationArea = All;
+                Editable = false;
+                ToolTip = 'Base unit of measure used for the Order Quantity.';
+            }
+            field("Order Unit Price"; Rec."Order Unit Price")
+            {
+                ApplicationArea = All;
+                Editable = false;
+                ToolTip = 'Calculated price per base unit of measure for the order quantity.';
+            }
             field(UOM; Rec.PI_UOM)
             {
                 ApplicationArea = All;
