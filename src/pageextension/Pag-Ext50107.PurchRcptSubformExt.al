@@ -1,9 +1,8 @@
-pageextension 50104 "Extra Fields on PSS Line" extends "Posted Sales Shpt. Subform"
+pageextension 50107 "Purchase Receipt Subform Ext" extends "Posted Purchase Rcpt. Subform"
 {
     layout
     {
-        // Adds the field after the Unit of Measure Code on the page
-        addbefore("Unit of Measure Code")
+        addafter("Unit of Measure Code")
         {
             field("Order Quantity"; Rec."Order Quantity")
             {
@@ -16,16 +15,17 @@ pageextension 50104 "Extra Fields on PSS Line" extends "Posted Sales Shpt. Subfo
                 Editable = false;
                 ToolTip = 'Base unit of measure used for the Order Quantity.';
             }
-            field("Order Unit Price"; Rec."Order Unit Price")
+            field("Order Unit Cost"; Rec."Order Unit Cost")
             {
                 ApplicationArea = All;
                 Editable = false;
-                ToolTip = 'Calculated price per base unit of measure for the order quantity.';
+                ToolTip = 'Calculated cost per base unit of measure for the order quantity.';
             }
             field("UOM"; Rec.PI_UOM)
             {
                 ApplicationArea = All;
-                ToolTip = 'Specifies the unit of measure for the quantity of the selected item.';
+                Caption = 'UOM';
+                ToolTip = 'Specifies the unit of measure for the selected item.';
             }
             field("Pack Size"; Rec.PackSize_Value)
             {
@@ -41,6 +41,10 @@ pageextension 50104 "Extra Fields on PSS Line" extends "Posted Sales Shpt. Subfo
         modify("Description 2")
         {
             Caption = 'Pack Configuration';
+        }
+        modify("Unit of Measure Code")
+        {
+            Visible = false;
         }
     }
 }

@@ -185,7 +185,10 @@ tableextension 50101 "Sales Line Ext" extends "Sales Line"
 
         TempQty := Round(Rec."Order Quantity" / Rec."Qty. per Unit of Measure", 0.00001);
         Rec.validate(Quantity, TempQty);
-        Rec.validate("Unit Price");
+        rec.UpdateUnitPrice(fieldno(Quantity));
+        If Rec."Unit Price" <> 0 then
+            Rec.validate("Line Amount", Rec.Quantity * Rec."Unit Price");
+
     end;
 
     procedure CalculateOrderPrice()

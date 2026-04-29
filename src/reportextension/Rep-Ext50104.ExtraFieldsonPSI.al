@@ -10,10 +10,22 @@ reportextension 50104 "Extra Fields on PSI" extends 1306
             column(LotNoTxt; GetLotNumbers("Line"))
             {
             }
+            column("OrderQuantity"; "Order Quantity")
+            {
+            }
+            column("OrderUOM"; "Order UOM")
+            {
+            }
+            column("OrderUnitPrice"; "Order Unit Price")
+            {
+            }
         }
         add(Header)
         {
             column(CustomerABN; CustABN)
+            {
+            }
+            column(CustomerPO; "External Document No.")
             {
             }
         }

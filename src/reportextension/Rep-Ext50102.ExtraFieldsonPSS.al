@@ -13,6 +13,18 @@ reportextension 50102 "Extra Fields on PSS" extends 208
             column("Description2"; "Description 2")
             {
             }
+            column(LotNoTxt; GetLotNumbers("Sales Shipment Line"))
+            {
+            }
+            column("OrderQuantity"; "Order Quantity")
+            {
+            }
+            column("OrderUOM"; "Order UOM")
+            {
+            }
+            column("OrderUnitPrice"; "Order Unit Price")
+            {
+            }
         }
         add("Sales Shipment Header")
         {
@@ -85,5 +97,24 @@ reportextension 50102 "Extra Fields on PSS" extends 208
     begin
         // Get the Company Information for the current company to retrieve bank and registration details
         CompanyInfo.Get();
+    end;
+
+    procedure GetLotNumbers(SalesShipmentLine: Record "Sales Shipment Line"): Text
+    var
+        TrackSpec: Record "Item Ledger Entry";
+        LotNumbers: Text;
+    begin
+        LotNumbers := '';
+        TrackSpec.SetRange("Item No.", SalesShipmentLine."No.");
+        TrackSpec.SetRange("Document No.", SalesShipmentLine."Document No.");
+        TrackSpec.SetRange(TrackSpec."Document Line No.", SalesShipmentLine."Line No.");
+        if TrackSpec.FindSet() then
+            repeat
+                if LotNumbers = '' then
+                    LotNumbers := TrackSpec."Lot No."
+                else
+                    LotNumbers += ', ' + TrackSpec."Lot No.";
+            until TrackSpec.Next() = 0;
+        exit(LotNumbers);
     end;
 }
